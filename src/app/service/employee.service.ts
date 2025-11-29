@@ -10,28 +10,26 @@ import { Employee } from '../type/Employee';
 export class EmployeeService {
     private baseUrl = 'http://localhost:8080/api/employees';
 
-    constructor(private http: HttpClient) {
-
-    }
+    constructor(private http: HttpClient){}
 
     createEmployee(payload: Employee): Observable<Employee> {
-        return this.http.post<Employee>(this.baseUrl , payload);
+      return this.http.post<Employee>(this.baseUrl, payload);
     }
 
-    getEmployeeById(id: number): Observable<Employee| null> {
-        return this.http.get<Employee>(`{$this.baseUrl}/${id}`)
+    getEmployeeById(id : number): Observable<Employee> {
+      return this.http.get<Employee>(`${this.baseUrl}/${id}`);
     }
 
-    getAllEmployees(): Observable<Employee[]> {
-        return this.http.get<Employee[]>(this.baseUrl);
+    getAllEmployee(): Observable<Employee[]> {
+      return this.http.get<Employee[]>(this.baseUrl);
     }
 
-    updateEmployee(id : number, payload: number): Observable<Employee> {
-        return this.http.put<Employee>(`${this.baseUrl}/${id}` , payload)
+    updateEmployee(id: number, payload: Employee): Observable<Employee> {
+      return this.http.put<Employee>(`${this.baseUrl}/${id}`, payload);
     }
 
-    deleteEmployee(id: number) : Observable<void> {
-        return this.http.delete<void>(`${this.baseUrl}/${id}`);
+    deleteEmployee(id : number): Observable<Employee> {
+      return this.http.delete<Employee>(`${this.baseUrl}/${id}`);
     }
 
 }
