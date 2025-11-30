@@ -8,28 +8,12 @@ import { Employee } from '../type/Employee';
   providedIn: 'root'
 })
 export class EmployeeService {
-    private baseUrl = 'http://localhost:8080/api/employees';
 
-    constructor(private http: HttpClient){}
+  private baseUrl = 'http://localhost:8080/api/employees';
 
-    createEmployee(payload: Employee): Observable<Employee> {
-      return this.http.post<Employee>(this.baseUrl, payload);
-    }
+  constructor(private http : HttpClient) { }
 
-    getEmployeeById(id : number): Observable<Employee> {
-      return this.http.get<Employee>(`${this.baseUrl}/${id}`);
-    }
-
-    getAllEmployee(): Observable<Employee[]> {
-      return this.http.get<Employee[]>(this.baseUrl);
-    }
-
-    updateEmployee(id: number, payload: Employee): Observable<Employee> {
-      return this.http.put<Employee>(`${this.baseUrl}/${id}`, payload);
-    }
-
-    deleteEmployee(id : number): Observable<Employee> {
-      return this.http.delete<Employee>(`${this.baseUrl}/${id}`);
-    }
-
+  getAllEmployee(): Observable<Employee[]> {
+    return this.http.get<Employee[]>(this.baseUrl);
+  }
 }

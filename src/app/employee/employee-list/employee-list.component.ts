@@ -9,13 +9,13 @@ import { Employee } from 'src/app/type/Employee';
 })
 export class EmployeeListComponent implements OnInit {
 
-  columnDefs = [
+  tableColumns = [
     { headerName: 'ID', field: 'id' },
     { headerName: 'Full Name', field: 'fullName' },
     { headerName: 'Department', field: 'department' }
   ];
 
-  rowData: Employee[] = [];
+  tabeData: Employee[] = [];
 
   constructor(private employeeService: EmployeeService) {}
 
@@ -25,7 +25,7 @@ export class EmployeeListComponent implements OnInit {
 
   loadAllEmployees(): void {
     this.employeeService.getAllEmployee().subscribe(employees => {
-      this.rowData = employees;
+      this.tabeData = employees;
     });
   }
 }
