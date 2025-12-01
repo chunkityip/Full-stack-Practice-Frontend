@@ -12,20 +12,21 @@ export class EmployeeListComponent implements OnInit {
   tableColumns = [
     { headerName: 'ID', field: 'id' },
     { headerName: 'Full Name', field: 'fullName' },
-    { headerName: 'Department', field: 'department' }
+    { headerName: 'Department', field: 'department'}
   ];
 
-  tabeData: Employee[] = [];
+  tableData: Employee[] = [];
 
   constructor(private employeeService: EmployeeService) {}
-
+  
   ngOnInit(): void {
-    this.loadAllEmployees();
+      this.loadAllEmployees();
   }
 
   loadAllEmployees(): void {
     this.employeeService.getAllEmployee().subscribe(employees => {
-      this.tabeData = employees;
-    });
+      this.tableData = employees;
+    })
   }
+ 
 }
