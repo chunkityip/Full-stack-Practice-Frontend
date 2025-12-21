@@ -33,15 +33,12 @@ export class EmployeeListComponent implements OnInit {
   }
 
 createEmploye() {
-    console.log('Opening dialog...'); // Add this
     const dialogRef = this.dialog.open(CreateEmployeeDialogComponent, {
       width: '500px',
       disableClose: false
     });
-    console.log('Dialog ref:', dialogRef); // Add this
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('Dialog closed with result:', result); // Add this
       if (result) {
         this.employeeService.createEmployee(result).subscribe(
           (newEmployee) => {
