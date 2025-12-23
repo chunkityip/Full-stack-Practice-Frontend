@@ -24,6 +24,7 @@ export class EmployeeListComponent implements OnInit {
       this.loadAllEmployees();
   }
 
+  //Create loadAllEmployees() using getAllEmployee() from service
   loadAllEmployees(): void {
    this.employeeService.getAllEmployee().subscribe(
       employees => {
