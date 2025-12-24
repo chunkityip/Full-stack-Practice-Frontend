@@ -24,14 +24,60 @@ export class EmployeeListComponent implements OnInit {
       this.loadAllEmployees();
   }
 
-  //Create loadAllEmployees() using getAllEmployee() from service
-  loadAllEmployees(): void {
-   this.employeeService.getAllEmployee().subscribe(
-      employees => {
-        this.tableData = employees;
-      }
-    )
+//Create loadAllEmployees() using getAllEmployee() from service
+  loadAllEmployees() : void {
+    this.employeeService.getAllEmployee()
+      .subscribe(
+        employees => {
+          this.tableData = employees;
+        }
+      )
   }
+
+/*
+Create createEmploye() using createEmployee() for 
+1. with dialog popup as width 500px connect with CreateEmployeeDialogComponent
+2. subscribe the result:
+a. if result , using createEmployee() to subscribe new Employee as loadAllEmployees()
+b. if error , display console.error('Error creating employee:', error);
+*/
+createEmployee() {
+  const dialogRef = this.dialog.open(CreateEmployeeDialogComponent, {
+    width: '500px',
+    disableClose: true
+  });
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      this.employeeService.createEmployee(result).subscribe(
+        (newEmployee) => {
+          this.loadAllEmployees();
+        },
+        (error) => {
+          console.error('Error create employee:', error)
+        }
+      )
+    }
+  })
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 createEmploye() {
     const dialogRef = this.dialog.open(CreateEmployeeDialogComponent, {
