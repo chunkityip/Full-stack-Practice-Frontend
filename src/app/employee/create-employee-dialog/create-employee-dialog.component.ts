@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { EmployeeStatus } from 'src/app/type/Employee';
 
 @Component({
   selector: 'app-create-employee-dialog',
@@ -9,6 +10,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 })
 export class CreateEmployeeDialogComponent {
   employeeForm: FormGroup;
+  currentStatus: EmployeeStatus = EmployeeStatus.UNSAVED;
 
   constructor(
     private fb: FormBuilder,
@@ -26,7 +28,15 @@ export class CreateEmployeeDialogComponent {
 
   onSubmit(): void {
     if (this.employeeForm.valid) {
-      this.dialogRef.close(this.employeeForm.value);
+      const formData = {
+        ...this.employeeForm.value,
+        isUnsaved: true 
+      };
+      this.dialogRef.close(formData);
     }
+  }
+
+  getStatusLabel(): string {
+    return this.currentStatus;
   }
 }
