@@ -9,6 +9,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBarModule } from '@angular/material/snack-bar'; 
 
 // AG Grid
 import { AgGridModule } from 'ag-grid-angular';
@@ -37,6 +38,7 @@ import { CreateEmployeeDialogComponent } from './employee/create-employee-dialog
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    MatSnackBarModule,
     AgGridModule
   ],
   providers: [],
