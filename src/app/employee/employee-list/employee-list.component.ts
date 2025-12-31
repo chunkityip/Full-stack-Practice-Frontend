@@ -29,12 +29,11 @@ const MESSAGES = {
 })
 export class EmployeeListComponent implements OnInit, OnDestroy {
   // Public properties
-  tableColumn: ColDef[] = this.initializeColumns();
+  tableColumn: ColDef[] = this.initColumns();
   defaultColDef: ColDef = { resizable: true };
   tableData: Employee[] = [];
   unsavedEmployees: Employee[] = [];
   selectedEmployees: Employee[] = [];
-  isLoading = false;
 
   // Private properties
   private gridApi!: GridApi;
@@ -59,7 +58,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   // Grid Events
   onGridReady(params: GridReadyEvent): void {
     this.gridApi = params.api;
-    this.gridApi.sizeColumnsToFit();
+    this.gridApi.sizeColumnsToFit(); //auto fix the size of header , no longer need to put width on every header in initColumns
   }
 
   onSelectionChanged(): void {
@@ -70,20 +69,22 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
 
   // Data Operations
   loadAllEmployees(): void {
-    this.isLoading = true;
-    
+    // Show overlay if gridApi exists
+    if (this.gridApi) this.gridApi.showLoadingOverlay();
+
     this.employeeService.getAllEmployee()
       .pipe(
         takeUntil(this.destroy$),
-        finalize(() => this.isLoading = false)
+        finalize(() => {
+          if (this.gridApi) this.gridApi.hideOverlay();
+        })
       )
       .subscribe({
         next: (employees) => {
-          this.tableData = [...employees, ...this.unsavedEmployees];
-          this.refreshGrid();
+          this.tableData = [...employees, ...this.unsavedEmployees]; // <-- just update variable
         },
-        error: (error) => {
-          console.error('Error loading employees:', error);
+        error: () => {
+          if (this.gridApi) this.gridApi.showNoRowsOverlay();
           this.showErrorMessage('Failed to load employees');
         }
       });
@@ -111,7 +112,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.isLoading = true;
+    this.gridApi.showLoadingOverlay();
 
     const saveObservables = employeesToSave.map(employee => {
       const payload = this.prepareEmployeePayload(employee);
@@ -121,7 +122,9 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
     forkJoin(saveObservables)
       .pipe(
         takeUntil(this.destroy$),
-        finalize(() => this.isLoading = false)
+        finalize(() => {
+          this.gridApi.hideOverlay();  // Hide loading (always)
+        })
       )
       .subscribe({
         next: () => {
@@ -154,7 +157,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   }
 
   // Private Helper Methods
-  private initializeColumns(): ColDef[] {
+  private initColumns(): ColDef[] {
     return [
       {
         headerName: "",
@@ -218,7 +221,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
 
     this.unsavedEmployees.push(unsavedEmployee);
     this.tableData = [...this.tableData, unsavedEmployee];
-    this.refreshGrid();
+    // this.refreshGrid();
   }
 
   private getEmployeesToSave(): Employee[] {
@@ -241,12 +244,6 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
 
     if (this.gridApi) {
       this.gridApi.deselectAll();
-    }
-  }
-
-  private refreshGrid(): void {
-    if (this.gridApi) {
-      this.gridApi.setRowData(this.tableData);
     }
   }
 
