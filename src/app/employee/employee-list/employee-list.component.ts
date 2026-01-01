@@ -1,5 +1,4 @@
-// employee-list.component.ts (SIMPLIFIED - UI WILL WORK)
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject, forkJoin } from 'rxjs';
@@ -25,7 +24,8 @@ const MESSAGES = {
 @Component({
   selector: 'app-employee-list',
   templateUrl: './employee-list.component.html',
-  styleUrls: ['./employee-list.component.scss']
+  styleUrls: ['./employee-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EmployeeListComponent implements OnInit, OnDestroy {
   // Public properties
@@ -34,6 +34,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   tableData: Employee[] = [];
   unsavedEmployees: Employee[] = [];
   selectedEmployees: Employee[] = [];
+  saveButtonText: string = '💾 Save (0)';
 
   // Private properties
   private gridApi!: GridApi;
@@ -64,6 +65,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   onSelectionChanged(): void {
     if (this.gridApi) {
       this.selectedEmployees = this.gridApi.getSelectedRows();
+      this.updateSaveButtonText();
     }
   }
 
@@ -82,6 +84,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (employees) => {
           this.tableData = [...employees, ...this.unsavedEmployees]; // <-- just update variable
+          this.updateSaveButtonText(); 
         },
         error: () => {
           if (this.gridApi) this.gridApi.showNoRowsOverlay();
@@ -135,21 +138,6 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
           this.showErrorMessage(MESSAGES.SAVE_ERROR);
         }
       });
-  }
-
-  // Getters
-  get saveButtonText(): string {
-    const selectedUnsaved = this.selectedEmployees.filter(emp => emp.isUnsaved);
-
-    if (selectedUnsaved.length > 0) {
-      return `💾 Save Selected (${selectedUnsaved.length})`;
-    }
-
-    if (this.unsavedEmployees.length > 0) {
-      return `💾 Save All (${this.unsavedEmployees.length})`;
-    }
-
-    return '💾 Save (0)';
   }
 
   get hasUnsavedEmployees(): boolean {
@@ -221,7 +209,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
 
     this.unsavedEmployees.push(unsavedEmployee);
     this.tableData = [...this.tableData, unsavedEmployee];
-    // this.refreshGrid();
+    this.updateSaveButtonText();
   }
 
   private getEmployeesToSave(): Employee[] {
@@ -241,7 +229,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
 
     this.showSuccessMessage(MESSAGES.SAVE_SUCCESS);
     this.loadAllEmployees();
-
+    this.updateSaveButtonText();
     if (this.gridApi) {
       this.gridApi.deselectAll();
     }
@@ -278,6 +266,18 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
 
     const config = statusConfig[status] || statusConfig[EmployeeStatus.DRAFT];
     return `<span class="status-badge ${config.cssClass}">${config.text}</span>`;
+  }
+
+  private updateSaveButtonText(): void {
+    const selectedUnsaved = this.selectedEmployees.filter(emp => emp.isUnsaved);
+
+    if (selectedUnsaved.length > 0) {
+      this.saveButtonText = `💾 Save Selected (${selectedUnsaved.length})`;
+    } else if (this.unsavedEmployees.length > 0) {
+      this.saveButtonText = `💾 Save All (${this.unsavedEmployees.length})`;
+    } else {
+      this.saveButtonText = '💾 Save (0)';
+    }
   }
 
   private actionsCellRenderer(params: any): string {
