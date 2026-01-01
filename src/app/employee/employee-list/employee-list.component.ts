@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject, forkJoin } from 'rxjs';
@@ -44,7 +44,8 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   constructor(
     private employeeService: EmployeeService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef 
   ) {}
 
   ngOnInit(): void {
@@ -84,7 +85,8 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (employees) => {
           this.tableData = [...employees, ...this.unsavedEmployees]; // <-- just update variable
-          this.updateSaveButtonText(); 
+          this.updateSaveButtonText();
+          this.cdr.markForCheck();
         },
         error: () => {
           if (this.gridApi) this.gridApi.showNoRowsOverlay();
@@ -210,6 +212,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
     this.unsavedEmployees.push(unsavedEmployee);
     this.tableData = [...this.tableData, unsavedEmployee];
     this.updateSaveButtonText();
+    this.cdr.markForCheck();
   }
 
   private getEmployeesToSave(): Employee[] {
@@ -233,6 +236,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
     if (this.gridApi) {
       this.gridApi.deselectAll();
     }
+    this.cdr.markForCheck();
   }
 
   private showSuccessMessage(message: string): void {
